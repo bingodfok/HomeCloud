@@ -7,6 +7,7 @@ import com.cobin.homecloud.common.exception.ServiceException;
 import com.cobin.homecloud.services.EquipmentBindingService;
 import com.cobin.homecloud.services.EqutService;
 import com.cobin.homecloud.utils.RedisUtils;
+import com.cobin.homecloud.utils.StrUtils;
 import com.cobin.homecloud.utils.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,16 +64,18 @@ public class EquipmentBindingServiceImpl implements EquipmentBindingService {
      * @param hcid 设备码
      */
     @Override
-    public UserEqut GenerateBindingInfo(String hcid) {
+    public UserEqut GenerateBindingInfo(String hcid, String bindingCode) {
 
-        UserEqut userEqut = new UserEqut();
-        UserDetailImpl principal = (UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userEqut.setUserId(principal.getSysUser().getUserId());
-        Equtpment equtInfo = equtService.getEqutInfoByEqutCode(hcid);
+        String value = (String) RedisUtils.getValue(BINDING_CAPTCHA_CODE_CACHE_PREFIX + hcid);
+        if (StrUtils.isEmpty(value)) {
+            throw new ServiceException(2005, "system.equt.equt_code_exception", hcid);
+        }
+        if (bindingCode != null && bindingCode.equals(value)) {
+            UserEqut userEqut = new UserEqut();
+            UserDetailImpl principal = (UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            userEqut.setUserId(principal.getSysUser().getUserId());
+            Equtpment equtInfo = equtService.getEqutInfoByEqutCode(hcid);
 
-        if (equtInfo == null) {
-            throw new ServiceException(2003, "system.equt.device_exist", hcid);
-        } else {
             userEqut.setEqutId(equtInfo.getEqutId());
             userEqut.setControlTopic("control_topic/" + genTopicSuffix());
 
@@ -80,11 +83,14 @@ public class EquipmentBindingServiceImpl implements EquipmentBindingService {
             userEqut.setFeedbackTopic("feedback_topic/" + genTopicSuffix());
             RedisUtils.setValue(USER_EQUT_CACHE_PREFIX + hcid, userEqut);
             return userEqut;
+        } else {
+            throw new ServiceException(2004, "system.equt.equt_binding_code_exception", bindingCode);
         }
     }
 
     /**
      * 生成Mqtt话题后缀
+     *
      * @return Suffix
      */
     private String genTopicSuffix() {

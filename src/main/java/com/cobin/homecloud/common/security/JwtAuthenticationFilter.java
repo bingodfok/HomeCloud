@@ -2,6 +2,7 @@ package com.cobin.homecloud.common.security;
 
 import com.cobin.homecloud.common.entity.UserDetailImpl;
 import com.cobin.homecloud.utils.JwtUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         UserDetailImpl loginUser = jwtUtils.getLoginUserByToken(request);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

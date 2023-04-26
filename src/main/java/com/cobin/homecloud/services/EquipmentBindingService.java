@@ -21,6 +21,6 @@ public interface EquipmentBindingService {
     /**
      * 生成设备绑定相关参数 topic 等
      */
-    UserEqut GenerateBindingInfo(String hcid);
+    UserEqut GenerateBindingInfo(String hcid,String bindingCode);
 
 }

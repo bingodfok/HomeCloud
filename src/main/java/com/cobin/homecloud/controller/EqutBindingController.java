@@ -1,14 +1,11 @@
 package com.cobin.homecloud.controller;
 
 
-import com.cobin.homecloud.common.annotation.Anonymous;
 import com.cobin.homecloud.common.entity.Equtpment;
 import com.cobin.homecloud.common.exception.ServiceException;
 import com.cobin.homecloud.common.vo.Result;
-import com.cobin.homecloud.services.EquipmentBindingService;
 import com.cobin.homecloud.services.EqutService;
 import com.cobin.homecloud.services.serviceImpl.EquipmentBindingServiceImpl;
-import com.cobin.homecloud.utils.RedisUtils;
 import com.cobin.homecloud.utils.StrUtils;
 import com.cobin.homecloud.utils.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +40,6 @@ public class EqutBindingController {
      * @param hcid 设备码
      * @return Result
      */
-    @Anonymous
     @GetMapping("/equt_info/{hcid}")
     public Result getEqutInfo(@PathVariable String hcid) {
         if (!checkEqutName(hcid)) {
@@ -68,11 +64,11 @@ public class EqutBindingController {
     /**
      * 获取设备绑定所需信息
      */
-    @GetMapping("/equt_binding_info/{hcid}")
-    public Result genEqutInfo(@PathVariable String hcid){
-        if(checkEqutName(hcid)){
-           return Result.success(bindingService.GenerateBindingInfo(hcid));
-        }else {
+    @GetMapping("/equt_binding_info/{hcid}/{bindingCode}")
+    public Result genEqutInfo(@PathVariable String hcid, @PathVariable String bindingCode) {
+        if (checkEqutName(hcid) && bindingCode != null) {
+            return Result.success(bindingService.GenerateBindingInfo(hcid, bindingCode));
+        } else {
             return Result.error(2002, "请求参数异常");
         }
     }
