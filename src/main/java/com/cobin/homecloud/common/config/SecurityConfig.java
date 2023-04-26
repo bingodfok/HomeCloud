@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-                .mvcMatchers().permitAll()
+                .mvcMatchers("/websocket/equt_binding/*").permitAll()
                 .anyRequest().authenticated();
         //jwt过滤器
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
