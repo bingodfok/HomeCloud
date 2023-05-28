@@ -48,13 +48,13 @@ public class MqttMappingHandle implements InitializingBean {
     }
     @Data
     static class TopicInfo {
-        private String topic;
-        private int qos;
+            private String topic;
+            private int qos;
         public TopicInfo(String topic,int qos){
             this.qos = qos;
             this.topic = topic;
         }
-        public TopicInfo(){};
+        public TopicInfo(){}
     }
 }
 

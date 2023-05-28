@@ -39,6 +39,7 @@ public class EquipmentBindingServiceImpl implements EquipmentBindingService {
     public boolean checkBinding(String hcid) {
         return Objects.equals(equtService.getEqutInfoByEqutCode(hcid).getEqutStatus(), "1");
     }
+
     /**
      * 获取待绑定设备信息
      */

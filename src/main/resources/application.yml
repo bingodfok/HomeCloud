@@ -17,6 +17,8 @@ spring:
       idle-timeout: 600000
       #连接超时时间
       connection-timeout: 30000
+      auto-commit: true
+
   messages:
     basename: i18n/messages
   # redis 配置
@@ -47,7 +49,7 @@ spring:
 #Mybatis-plus
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     #开启驼峰转换
     map-underscore-to-camel-case: true
 
@@ -72,6 +74,12 @@ mqtt:
   keepalive: 60
   #是否清理会话
   clearSession: false
+
+minio:
+  url: http://43.139.168.70
+  port: 9000
+  access_key: qNjka6wpP1FEeltMQX77
+  secret_key: FqMXKwDBrNqY2AxuYN06S8HRFE65DKazRQZRFtMV
 
 
 

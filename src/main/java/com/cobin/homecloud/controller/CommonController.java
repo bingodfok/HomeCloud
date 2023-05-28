@@ -1,5 +1,6 @@
 package com.cobin.homecloud.controller;
 
+import cn.hutool.core.codec.Base64;
 import com.cobin.homecloud.common.annotation.Anonymous;
 import com.cobin.homecloud.common.vo.LoginInfo;
 import com.cobin.homecloud.common.vo.RegisterInfo;
@@ -7,6 +8,7 @@ import com.cobin.homecloud.common.vo.Result;
 import com.cobin.homecloud.services.LoginService;
 import com.cobin.homecloud.services.RegisterService;
 import com.cobin.homecloud.utils.CaptchaUtils;
+import com.cobin.homecloud.utils.RsaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +51,7 @@ public class CommonController {
     @Anonymous
     @PostMapping("/login")
     public Result LoginController(@RequestBody @Validated LoginInfo loginInfo) {
-        // logger.info("手机号{}，验证码{},密码{}",loginInfo.getPhone(),loginInfo.getCaptcha(),loginInfo.getPassword());
+        logger.info("手机号{}，验证码{},密码{}", loginInfo.getPhone(), loginInfo.getCaptcha(), loginInfo.getPassword());
         String token = loginService.login(loginInfo);
         if (token != null) {
             return Result.success().put("token", token);
@@ -68,5 +70,17 @@ public class CommonController {
         logger.info("手机号【{}】获取验证码", phone);
         String smsCaptcha = CaptchaUtils.createSmsCaptcha(phone);
         return Result.success(200, "验证码获取成功", smsCaptcha);
+    }
+
+    /**
+     * 获取密码加密公钥
+     *
+     * @return 加密公钥 Base64编码
+     */
+    @Anonymous
+    @GetMapping("/rsa_public_key")
+    public Result GetRsaPublicKey() {
+        String Base64Key = Base64.encode(RsaUtil.getPublicKey().getEncoded());
+        return Result.success().put("publicKey", Base64Key);
     }
 }

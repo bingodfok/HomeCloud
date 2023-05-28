@@ -7,10 +7,7 @@ import com.cobin.homecloud.common.exception.*;
 import com.cobin.homecloud.common.vo.LoginInfo;
 import com.cobin.homecloud.mapper.UserMapper;
 import com.cobin.homecloud.services.LoginService;
-import com.cobin.homecloud.utils.CaptchaUtils;
-import com.cobin.homecloud.utils.JwtUtils;
-import com.cobin.homecloud.utils.RedisUtils;
-import com.cobin.homecloud.utils.StrUtils;
+import com.cobin.homecloud.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * 用户登录服务
@@ -79,7 +78,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public UserDetailImpl ValidateLogonCaptcha(final LoginInfo loginInfo) {
-        UserDetailImpl userDetail = null;
+        UserDetailImpl userDetail;
         CaptchaUtils.ValidatePhone(loginInfo.getPhone());
         String value = (String) RedisUtils.getValue(CaptchaUtils.SMS_PATH_PREFIX + loginInfo.getPhone());
 
@@ -109,10 +108,12 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserDetailImpl ValidateLoginPass(final LoginInfo loginInfo) {
         CaptchaUtils.ValidatePhone(loginInfo.getPhone());
-        Authentication authenticate = null;
+        Authentication authenticate;
+        // RSA 密码解密
+        String password = RsaUtil.decryStr(loginInfo.getPassword(), StandardCharsets.UTF_8);
         //验证用户密码和手机号
         try {
-            UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(loginInfo.getPhone(), loginInfo.getPassword());
+            UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(loginInfo.getPhone(),password);
             authenticate = authenticationManager.authenticate(AuthenticationToken);
         } catch (Exception e) {
             if (e instanceof BadCredentialsException) {
@@ -123,7 +124,7 @@ public class LoginServiceImpl implements LoginService {
                 throw new ServiceException(LOGIN_SERVICE_MODE, 1005, "login.info.unregistered", loginInfo.getPhone());
             }
         }
-        return (UserDetailImpl) authenticate.getDetails();
+        return (UserDetailImpl) authenticate.getPrincipal();
     }
 
     /**
