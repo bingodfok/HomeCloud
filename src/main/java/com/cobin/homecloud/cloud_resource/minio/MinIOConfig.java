@@ -1,4 +1,4 @@
-package com.cobin.homecloud.cloud_resource.minio;
+package com.cobin.homecloud.cloud_resource.minio;//
 
 
 import io.minio.MinioClient;
@@ -14,7 +14,7 @@ public class MinIOConfig {
 
     @Bean(name = "minioClient")
     public MinioClient minioClient() {
-        return MinioClient.builder().endpoint(minIoProperties.getUrl(), minIoProperties.getPort(), false) // 无SSl安全证书
+        return MinioClient.builder().endpoint(minIoProperties.getUrl(), minIoProperties.getPort(), minIoProperties.isSecure()) // 无SSl安全证书
                 .credentials(minIoProperties.getAccessKey(), minIoProperties.getSecretKey())
                 .build();
     }

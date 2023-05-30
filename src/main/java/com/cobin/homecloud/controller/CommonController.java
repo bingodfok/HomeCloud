@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/system/common")
@@ -66,7 +68,7 @@ public class CommonController {
      */
     @Anonymous
     @GetMapping("/sms_captcha")
-    public Result GetCaptchaController(@RequestParam("phone") String phone, HttpServletRequest request) {
+    public Result GetCaptchaController(@RequestParam("phone") String phone) {
         logger.info("手机号【{}】获取验证码", phone);
         String smsCaptcha = CaptchaUtils.createSmsCaptcha(phone);
         return Result.success(200, "验证码获取成功", smsCaptcha);

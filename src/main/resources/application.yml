@@ -17,7 +17,6 @@ spring:
       idle-timeout: 600000
       #连接超时时间
       connection-timeout: 30000
-      auto-commit: true
 
   messages:
     basename: i18n/messages
@@ -78,6 +77,8 @@ mqtt:
 minio:
   url: http://43.139.168.70
   port: 9000
+  #不使用 SSL证书
+  secure: false
   access_key: qNjka6wpP1FEeltMQX77
   secret_key: FqMXKwDBrNqY2AxuYN06S8HRFE65DKazRQZRFtMV
 

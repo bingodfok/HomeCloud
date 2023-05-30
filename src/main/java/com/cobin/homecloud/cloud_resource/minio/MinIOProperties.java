@@ -17,4 +17,6 @@ public class MinIOProperties {
 
     private Integer port;
 
+    private boolean secure;
+
 }
