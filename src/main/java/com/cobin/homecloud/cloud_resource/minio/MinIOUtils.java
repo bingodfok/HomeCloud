@@ -7,16 +7,14 @@ import io.minio.http.Method;
 import io.minio.messages.Item;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ObjectUtils;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * minio工具
@@ -82,6 +80,12 @@ public class MinIOUtils implements InitializingBean {
         return re;
     }
 
+    /**
+     * 删除指定桶下的指定文件对象
+     *
+     * @param bucketName 桶名
+     * @param objName    文件对象名
+     */
     public static void removeObject(String bucketName, String objName) {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().object(objName).bucket(bucketName).build());
@@ -119,15 +123,15 @@ public class MinIOUtils implements InitializingBean {
     }
 
     /**
-     * 读取临时文件对象上传路径
+     * 读取临时文件对象上传路径 expiry 单位秒
      */
-    public static String getPresignedPutObjectUrl(String objName, String bucketName, int expiry) {
+    public static String getPresignedGetObjectUrl(String objName, String bucketName, int expiry) {
         String url = null;
         try {
             url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
                     .object(objName).method(Method.GET)
                     .bucket(bucketName)
-                    .expiry(expiry)
+                    .expiry(expiry, TimeUnit.SECONDS)  //单位 秒
                     .build());
         } catch (Exception e) {
             e.printStackTrace();
@@ -137,15 +141,24 @@ public class MinIOUtils implements InitializingBean {
 
     /**
      * 向 minio 上传文件对象
+     *
      * @return 文件对象响应
      */
     public static ObjectWriteResponse putObject() throws IOException {
         ObjectWriteResponse response = null;
-        try{
+        try {
             response = minioClient.putObject(PutObjectArgs.builder().build());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
     }
+
+//    public static (){
+//        try{
+//            minioClient.getPresignedObjectUrl()
+//        }catch (Exception e){
+//
+//        }
+//    }
 }

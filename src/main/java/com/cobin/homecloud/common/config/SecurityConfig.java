@@ -26,9 +26,9 @@ import javax.annotation.Resource;
  * @Author 1_bit
  * @Date 2023/3/29 16:58
  */
-@EnableWebSecurity
 @SuppressWarnings("all")
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
